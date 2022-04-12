@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>de.wuerfel62.work</groupId>
+		<artifactId>messaging-samples</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>activemq</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>activemq-producer-javaee</module>
+	</modules>
+
+	<properties>
+		<!-- Java EE version -->
+		<version.javaee-spec>8.0.1</version.javaee-spec>
+		<version.liberty>22.0.0.2</version.liberty>
+		<config.liberty>src/main/liberty</config.liberty>
+		<version.liberty-plugin>3.5.1</version.liberty-plugin>
+		<version.amq-rar>5.17.0</version.amq-rar>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.openliberty</groupId>
+				<artifactId>openliberty-runtime</artifactId>
+				<version>${version.liberty}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>${version.javaee-spec}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- für Eclipse-Tooling-Support -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.microprofile.openapi</groupId>
+			<artifactId>microprofile-openapi-api</artifactId>
+			<version>3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-rar</artifactId>
+			<version>${version.amq-rar}</version>
+			<type>rar</type>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<!-- Usage:
+                     - mvn liberty:install-server (download server into target folder)
+                     - mvn liberty:dev (start server)
+                     - mvn liberty:stop (stop server)
+                     -->
+					<groupId>io.openliberty.tools</groupId>
+					<artifactId>liberty-maven-plugin</artifactId>
+					<version>${version.liberty-plugin}</version>
+					<extensions>true</extensions>
+					<configuration>
+						<configDirectory>${config.liberty}</configDirectory>
+						<assemblyArtifact>
+							<groupId>io.openliberty</groupId>
+							<artifactId>openliberty-runtime</artifactId>
+							<version>${version.liberty}</version>
+							<type>zip</type>
+						</assemblyArtifact>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>local</id>
+			<build>
+				<plugins>
+					<!-- Liberty Profile Konfiguration -->
+					<plugin>
+						<groupId>io.openliberty.tools</groupId>
+						<artifactId>liberty-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>install-liberty</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>install-server</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- - - - - - - copy AMQ resource adapter to shared resources - - - -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>3.2.0</version>
+						<executions>
+							<execution>
+								<id>copy-amq-rar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeArtifactIds>activemq-rar</includeArtifactIds>
+									<outputDirectory>${project.build.directory}/liberty/wlp/usr/shared/resources/</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
