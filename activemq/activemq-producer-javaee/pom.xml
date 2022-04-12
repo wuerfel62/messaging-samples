@@ -3,7 +3,7 @@
 
 	<parent>
 		<groupId>de.wuerfel62.work</groupId>
-		<artifactId>messaging-samples</artifactId>
+		<artifactId>activemq</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
