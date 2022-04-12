@@ -10,21 +10,28 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 
 @MessageDriven(name = "CustomerMDB")
-public class CustomerListener {
+public class CustomerListener implements MessageListener{
 
 	@Inject
 	CustomerManager manager;
 	
-	public void onMessage(Message message) throws JMSException {
-		if(message instanceof MapMessage) {
-			var map = (MapMessage) message;
-			Customer customer = new Customer();
-			getFromMessage(map, "firstName").ifPresent(customer::setFirstName);
-			getFromMessage(map, "lastName").ifPresent(customer::setLastName);
-			getFromMessage(map, "birthDate", s -> LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE)).ifPresent(customer::setBirthDate);
-			this.manager.addCustomer(customer);
+	@Override
+	public void onMessage(Message message){
+		try {
+			if(message instanceof MapMessage) {
+				var map = (MapMessage) message;
+				Customer customer = new Customer();
+				getFromMessage(map, "firstName").ifPresent(customer::setFirstName);
+				getFromMessage(map, "lastName").ifPresent(customer::setLastName);
+				getFromMessage(map, "birthDate", s -> LocalDate.parse(s, DateTimeFormatter.ISO_LOCAL_DATE)).ifPresent(customer::setBirthDate);
+				this.manager.addCustomer(customer);
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	
