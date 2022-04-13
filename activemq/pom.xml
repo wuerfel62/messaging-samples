@@ -15,6 +15,7 @@
 		<module>activemq-producer-javaee</module>
 		<module>activemq-consumer-javaee</module>
 		<module>spring-jms</module>
+		<module>spring-kafka</module>
 	</modules>
 
 	<properties>
