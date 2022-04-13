@@ -6,12 +6,6 @@ public class Customer {
 	private String name;
 	private LocalDate birthDate;
 
-	public Customer(String name, LocalDate birthDate) {
-		super();
-		this.name = name;
-		this.birthDate = birthDate;
-	}
-
 	public String getName() {
 		return name;
 	}
