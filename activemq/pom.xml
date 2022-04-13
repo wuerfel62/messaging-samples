@@ -13,6 +13,8 @@
 
 	<modules>
 		<module>activemq-producer-javaee</module>
+		<module>activemq-consumer-javaee</module>
+		<module>spring-jms</module>
 	</modules>
 
 	<properties>
